@@ -1,28 +1,30 @@
 import { Button, Typography, css } from '@mui/material'
 
 import ContactCard from './Contact'
+import { Order_By, useContactsQuery } from '~/generated/graphql'
 
 interface Props {
   title: string
 }
 
-const mock = [
-  {
-    id: 1,
-    firstName: 'lorem',
-    lastName: 'ipsum',
-    phones: ['111122223333', '222233334444'],
-  },
-]
-
 export default function ContactList(props: Props) {
+  const { loading, error, data } = useContactsQuery({
+    variables: {
+      limit: 10,
+      order_by: { first_name: Order_By.Asc },
+    },
+  })
+
+  if (loading) return <Typography>Loading...</Typography>
+  if (error) return <Typography>Something went wrong...</Typography>
+
   return (
     <>
       <Typography variant="h6" gutterBottom>
         {props.title}
       </Typography>
       <div css={styles.list}>
-        {mock.map((item) => (
+        {data?.contact.map((item) => (
           <ContactCard key={item.id} contact={item} isFavorite={true} />
         ))}
       </div>

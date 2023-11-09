@@ -12,27 +12,34 @@ import {
 } from '@mui/material'
 
 import { Link } from 'react-router-dom'
+import { ContactFragment, useDeleteContactMutation } from '~/generated/graphql'
 
 interface Props {
-  contact: {
-    id: number
-    firstName: string
-    lastName: string
-    phones: string[]
-  }
+  contact: ContactFragment
   isFavorite: boolean
 }
 
 export default function ContactCard(props: Props) {
   const { contact, isFavorite } = props
+  const fullname = `${contact.first_name} ${contact.last_name}`
 
-  const fullname = `${contact.firstName} ${contact.lastName}`
+  const [deleteContact, { loading }] = useDeleteContactMutation({
+    variables: { id: contact.id },
+    update(cache, { data }) {
+      if (!data?.delete_contact_by_pk) return
+
+      cache.evict({ id: cache.identify(data.delete_contact_by_pk) })
+      cache.gc()
+    },
+  })
 
   return (
     <Card>
       <CardContent>
         <Typography fontWeight={700}>{fullname}</Typography>
-        <Typography variant="body2">{contact.phones.join(', ')}</Typography>
+        <Typography variant="body2">
+          {contact.phones.map((phone) => phone.number).join(', ')}
+        </Typography>
       </CardContent>
 
       <CardActions css={styles.actions}>
@@ -40,6 +47,7 @@ export default function ContactCard(props: Props) {
           <IconButton
             aria-label={`Add ${fullname} to favorite`}
             color="warning"
+            disabled={loading}
           >
             <StarOutlineRoundedIcon />
           </IconButton>
@@ -48,6 +56,7 @@ export default function ContactCard(props: Props) {
           <IconButton
             aria-label={`Remove ${fullname} from favorite`}
             color="warning"
+            disabled={loading}
           >
             <StarRateRoundedIcon />
           </IconButton>
@@ -58,6 +67,7 @@ export default function ContactCard(props: Props) {
           to={`/edit/${contact.id}`}
           aria-label={`Edit ${fullname}`}
           color="primary"
+          disabled={loading}
         >
           <EditRoundedIcon />
         </IconButton>
@@ -65,6 +75,8 @@ export default function ContactCard(props: Props) {
         <IconButton
           aria-label={`Delete ${fullname}`}
           color="error"
+          disabled={loading}
+          onClick={() => deleteContact()}
         >
           <DeleteRoundedIcon />
         </IconButton>

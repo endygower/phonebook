@@ -1,0 +1,115 @@
+fragment Contact on contact {
+  id
+  first_name
+  last_name
+  phones {
+    number
+  }
+}
+
+query Contacts(
+  $distinct_on: [contact_select_column!]
+  $limit: Int = 10
+  $offset: Int = 0
+  $order_by: [contact_order_by!]
+  $where: contact_bool_exp
+) {
+  contact(
+    distinct_on: $distinct_on
+    limit: $limit
+    offset: $offset
+    order_by: $order_by
+    where: $where
+  ) {
+    ...Contact
+  }
+}
+
+query Contact($id: Int!) {
+  contact_by_pk(id: $id) {
+    ...Contact
+  }
+}
+
+query phone(
+  $where: phone_bool_exp
+  $distinct_on: [phone_select_column!]
+  $limit: Int = 10
+  $offset: Int = 0
+  $order_by: [phone_order_by!]
+) {
+  phone(
+    where: $where
+    distinct_on: $distinct_on
+    limit: $limit
+    offset: $offset
+    order_by: $order_by
+  ) {
+    contact {
+      last_name
+      first_name
+      id
+    }
+    number
+  }
+}
+
+mutation CreateContact(
+  $first_name: String!
+  $last_name: String!
+  $phones: [phone_insert_input!]!
+) {
+  insert_contact(
+    objects: {
+      first_name: $first_name
+      last_name: $last_name
+      phones: { data: $phones }
+    }
+  ) {
+    returning {
+      ...Contact
+    }
+  }
+}
+
+mutation AddNumber($contact_id: Int!, $phone_number: String!) {
+  insert_phone(objects: { contact_id: $contact_id, number: $phone_number }) {
+    returning {
+      contact {
+        ...Contact
+      }
+    }
+  }
+}
+
+mutation EditContact($id: Int!, $_set: contact_set_input) {
+  update_contact_by_pk(pk_columns: { id: $id }, _set: $_set) {
+    ...Contact
+  }
+}
+
+mutation EditPhone(
+  $pk_columns: phone_pk_columns_input!
+  $new_phone_number: String!
+) {
+  update_phone_by_pk(
+    pk_columns: $pk_columns
+    _set: { number: $new_phone_number }
+  ) {
+    contact {
+      id
+      last_name
+      first_name
+      created_at
+      phones {
+        number
+      }
+    }
+  }
+}
+
+mutation DeleteContact($id: Int!) {
+  delete_contact_by_pk(id: $id) {
+    id
+  }
+}
