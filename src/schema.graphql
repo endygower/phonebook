@@ -48,7 +48,6 @@ query phone(
     contact {
       last_name
       first_name
-      id
     }
     number
   }
