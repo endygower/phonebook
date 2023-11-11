@@ -15,7 +15,7 @@ export default function Header() {
         >
           <ArrowBackIosNewRoundedIcon />
         </IconButton>
-        <Typography variant="h6">
+        <Typography variant="h1">
           Add new contact
         </Typography>
       </Toolbar>

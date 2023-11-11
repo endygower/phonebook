@@ -6,7 +6,7 @@ export default function Header() {
   return (
     <AppBar position="sticky">
       <Toolbar>
-        <Typography variant="h6" css={styles.title}>
+        <Typography variant="h1" css={styles.title}>
           Contacts
         </Typography>
         <IconButton
