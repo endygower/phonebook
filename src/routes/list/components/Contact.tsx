@@ -1,18 +1,19 @@
+import { Link } from 'react-router-dom'
+import { useModal } from '~/common/modal/ModalProvider'
+import { useDeleteContactMutation, ContactFragment } from '~/generated/graphql'
+
 import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded'
 import EditRoundedIcon from '@mui/icons-material/EditRounded'
 import StarOutlineRoundedIcon from '@mui/icons-material/StarOutlineRounded'
 import StarRateRoundedIcon from '@mui/icons-material/StarRateRounded'
 import {
+  css,
   Card,
   CardActions,
   CardContent,
   IconButton,
   Typography,
-  css,
 } from '@mui/material'
-
-import { Link } from 'react-router-dom'
-import { ContactFragment, useDeleteContactMutation } from '~/generated/graphql'
 
 interface Props {
   contact: ContactFragment
@@ -23,6 +24,8 @@ export default function ContactCard(props: Props) {
   const { contact, isFavorite } = props
   const fullname = `${contact.first_name} ${contact.last_name}`
 
+  const { showConfirmationModal, closeModal } = useModal()
+
   const [deleteContact, { loading }] = useDeleteContactMutation({
     variables: { id: contact.id },
     update(cache, { data }) {
@@ -32,6 +35,16 @@ export default function ContactCard(props: Props) {
       cache.gc()
     },
   })
+
+  function deleteContactConfirm() {
+    showConfirmationModal({
+      content: 'Are you sure want to delete the contact?',
+      onConfirm: () => {
+        deleteContact()
+        closeModal()
+      },
+    })
+  }
 
   return (
     <Card css={styles.root}>
@@ -76,7 +89,7 @@ export default function ContactCard(props: Props) {
           aria-label={`Delete ${fullname}`}
           color="error"
           disabled={loading}
-          onClick={() => deleteContact()}
+          onClick={() => deleteContactConfirm()}
         >
           <DeleteRoundedIcon />
         </IconButton>
