@@ -46,6 +46,7 @@ const styles = {
     zIndex: 10,
     // todo: handle for desktop
     width: '90%',
+    maxWidth: 500,
   }),
   closeIcon: css({
     position: 'absolute',

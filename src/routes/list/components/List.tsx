@@ -1,4 +1,4 @@
-import { Button, Typography, css } from '@mui/material'
+import { Button, Typography, css, useMediaQuery } from '@mui/material'
 
 import ContactCard from './Contact'
 import { Order_By, useContactsQuery } from '~/generated/graphql'
@@ -8,6 +8,8 @@ interface Props {
 }
 
 export default function ContactList(props: Props) {
+  const isDesktopView = useMediaQuery('(min-width:900px)')
+
   const { loading, error, data } = useContactsQuery({
     variables: {
       limit: 10,
@@ -23,7 +25,7 @@ export default function ContactList(props: Props) {
       <Typography variant="h6" gutterBottom>
         {props.title}
       </Typography>
-      <div css={styles.list}>
+      <div css={[isDesktopView ? styles.desktopList : styles.list]}>
         {data?.contact.map((item) => (
           <ContactCard key={item.id} contact={item} isFavorite={true} />
         ))}
@@ -39,6 +41,11 @@ const styles = {
   list: css({
     display: 'flex',
     flexDirection: 'column',
+    gap: 12,
+  }),
+  desktopList: css({
+    display: 'grid',
+    gridTemplateColumns: 'repeat(3, 1fr)',
     gap: 12,
   }),
   button: css({
