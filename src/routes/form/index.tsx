@@ -20,7 +20,7 @@ import { useNavigate } from 'react-router-dom'
 function nameValidator(label: string) {
   return function validator(value: string) {
     if (!value) return `${label} is required`
-    if (!/[a-z ]+/i.test(value)) return `${label} must be alphabet`
+    if (!/^[a-z]+$/i.test(value)) return `${label} must be alphabet`
 
     return
   }
@@ -29,7 +29,7 @@ function nameValidator(label: string) {
 function phoneValidator(label: string) {
   return function validator(value: string) {
     if (!value) return `${label} is required`
-    if (!/[0-9]/i.test(value)) return `${label} must be numeric`
+    if (!/^[0-9]$/i.test(value)) return `${label} must be numeric`
     if (value.length < 10 || value.length > 12)
       return `${label} length must be between 10 and 12`
 
@@ -50,9 +50,9 @@ interface FormValues {
 }
 
 const initialValues: FormValues = {
-  firstName: 'lorem',
-  lastName: 'ipsum',
-  phones: ['1234567890'],
+  firstName: '',
+  lastName: '',
+  phones: [''],
 }
 
 export function Component() {
