@@ -16,6 +16,7 @@ export default function Header() {
           color="inherit"
         >
           <AddIcon />
+          <Typography>Add New</Typography>
         </IconButton>
       </Toolbar>
     </AppBar>
