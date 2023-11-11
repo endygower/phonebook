@@ -1,11 +1,13 @@
 import { createHashRouter, RouterProvider } from 'react-router-dom'
+import theme from '~/theme'
 
 import { ApolloClient, ApolloProvider, InMemoryCache } from '@apollo/client'
 import {
   CssBaseline,
   Experimental_CssVarsProvider as CssVarsProvider,
 } from '@mui/material'
-import theme from '~/theme'
+
+import { ModalProvider } from './common/modal/ModalProvider'
 
 const router = createHashRouter([
   { path: '/', lazy: () => import('./routes/list') },
@@ -22,8 +24,10 @@ export default function App() {
   return (
     <ApolloProvider client={client}>
       <CssVarsProvider theme={theme}>
-        <CssBaseline />
-        <RouterProvider router={router} />
+        <ModalProvider>
+          <CssBaseline />
+          <RouterProvider router={router} />
+        </ModalProvider>
       </CssVarsProvider>
     </ApolloProvider>
   )
