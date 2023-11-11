@@ -29,7 +29,7 @@ export default function ContactList(props: Props) {
         ))}
       </div>
       <Button variant="text" css={styles.button}>
-        Load more
+        Load more...
       </Button>
     </>
   )

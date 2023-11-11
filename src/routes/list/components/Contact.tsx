@@ -34,7 +34,7 @@ export default function ContactCard(props: Props) {
   })
 
   return (
-    <Card>
+    <Card css={styles.root}>
       <CardContent>
         <Typography fontWeight={700}>{fullname}</Typography>
         <Typography variant="body2">
@@ -86,6 +86,10 @@ export default function ContactCard(props: Props) {
 }
 
 const styles = {
+  root: css({
+    display: 'flex',
+    justifyContent: 'space-between',
+  }),
   actions: css({
     justifyContent: 'flex-end',
   }),
