@@ -8,6 +8,7 @@ import Header from './components/Header'
 
 import { Field, Form } from 'react-final-form'
 import {
+  useContactsLazyQuery,
   useCreateContactMutation,
   usePhoneLazyQuery,
 } from '~/generated/graphql'
@@ -59,8 +60,26 @@ export function Component() {
   const navigate = useNavigate()
   const [createContact] = useCreateContactMutation()
   const [findPhone] = usePhoneLazyQuery()
+  const [findContacts] = useContactsLazyQuery()
 
   async function submitForm(values: FormValues) {
+    // Find duplicate name in db
+    const { data: existingContact } = await findContacts({
+      variables: {
+        where: {
+          first_name: { _eq: values.firstName },
+          last_name: { _eq: values.lastName },
+        },
+      },
+    })
+
+    if ((existingContact?.contact || []).length > 0) {
+      return {
+        firstName: 'This name is already used',
+        lastName: 'This name is already used',
+      }
+    }
+
     // Find duplicate phone number by user input
     const unique = new Set(values.phones)
     if (unique.size !== values.phones.length) {
