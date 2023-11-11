@@ -1,27 +1,14 @@
-import { css } from '@mui/material'
-
+import Content from './components/Content'
 import Header from './components/Header'
 import Search from './components/Search'
-import ContactList from './components/List'
+import { SearchProvider } from './contexts/search'
 
 export function Component() {
   return (
-    <>
+    <SearchProvider>
       <Header />
       <Search />
-
-      <div css={styles.content}>
-        <ContactList title="Favorite Contacts" />
-        <ContactList title="Contacts" />
-      </div>
-    </>
+      <Content />
+    </SearchProvider>
   )
-}
-
-const styles = {
-  content: css({
-    padding: 16,
-    display: 'flex',
-    flexDirection: 'column',
-  }),
 }
