@@ -6,6 +6,7 @@ export default function Search() {
     <div css={styles.root}>
       <OutlinedInput
         size="small"
+        placeholder="Search..."
         startAdornment={
           <InputAdornment position="start">
             <SearchIcon />
