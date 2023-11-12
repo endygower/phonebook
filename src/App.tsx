@@ -2,6 +2,7 @@ import { createHashRouter, RouterProvider } from 'react-router-dom'
 import theme from '~/theme'
 
 import { ApolloClient, ApolloProvider, InMemoryCache } from '@apollo/client'
+import { offsetLimitPagination } from '@apollo/client/utilities'
 import {
   CssBaseline,
   Experimental_CssVarsProvider as CssVarsProvider,
@@ -18,7 +19,15 @@ const router = createHashRouter([
 
 const client = new ApolloClient({
   uri: 'https://wpe-hiring.tokopedia.net/graphql',
-  cache: new InMemoryCache(),
+  cache: new InMemoryCache({
+    typePolicies: {
+      Query: {
+        fields: {
+          contact: offsetLimitPagination(),
+        },
+      },
+    },
+  }),
 })
 
 export default function App() {
