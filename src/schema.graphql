@@ -71,39 +71,20 @@ mutation CreateContact(
   }
 }
 
-mutation AddNumber($contact_id: Int!, $phone_number: String!) {
-  insert_phone(objects: { contact_id: $contact_id, number: $phone_number }) {
-    returning {
-      contact {
-        ...Contact
-      }
-    }
-  }
-}
-
-mutation EditContact($id: Int!, $_set: contact_set_input) {
-  update_contact_by_pk(pk_columns: { id: $id }, _set: $_set) {
-    ...Contact
-  }
-}
-
-mutation EditPhone(
-  $pk_columns: phone_pk_columns_input!
-  $new_phone_number: String!
+mutation EditContact(
+  $id: Int!
+  $contact: contact_set_input
+  $delete_phones: phone_bool_exp!
+  $add_phones: [phone_insert_input!]!
 ) {
-  update_phone_by_pk(
-    pk_columns: $pk_columns
-    _set: { number: $new_phone_number }
-  ) {
-    contact {
-      id
-      last_name
-      first_name
-      created_at
-      phones {
-        number
-      }
-    }
+  update_contact_by_pk(pk_columns: { id: $id }, _set: $contact) {
+    id
+  }
+  delete_phone(where: $delete_phones) {
+    affected_rows
+  }
+  insert_phone(objects: $add_phones) {
+    affected_rows
   }
 }
 

@@ -4,19 +4,13 @@ import PersonOutlineRoundedIcon from '@mui/icons-material/PersonOutlineRounded'
 import PhoneRoundedIcon from '@mui/icons-material/PhoneRounded'
 import { css, Button, IconButton, TextField } from '@mui/material'
 
-import Header from './components/Header'
-
+import { SubmissionErrors } from 'final-form'
 import { Field, Form } from 'react-final-form'
-import {
-  useContactsLazyQuery,
-  useCreateContactMutation,
-  usePhoneLazyQuery,
-} from '~/generated/graphql'
+import { useContactsLazyQuery, usePhoneLazyQuery } from '~/generated/graphql'
 
 import arrayMutators from 'final-form-arrays'
 import { FieldArray } from 'react-final-form-arrays'
-import { Fragment } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Fragment, ReactElement } from 'react'
 
 function nameValidator(label: string) {
   return function validator(value: string) {
@@ -30,7 +24,7 @@ function nameValidator(label: string) {
 function phoneValidator(label: string) {
   return function validator(value: string) {
     if (!value) return `${label} is required`
-    if (!/^[0-9]$/i.test(value)) return `${label} must be numeric`
+    if (!/^[0-9]+$/i.test(value)) return `${label} must be numeric`
     if (value.length < 10 || value.length > 12)
       return `${label} length must be between 10 and 12`
 
@@ -44,21 +38,24 @@ function phonesValidator(values: string[]) {
   return
 }
 
-interface FormValues {
+export interface FormValues {
   firstName: string
   lastName: string
   phones: string[]
 }
 
-const initialValues: FormValues = {
-  firstName: '',
-  lastName: '',
-  phones: [''],
+interface Props {
+  initialValues: FormValues
+  onSubmit: (
+    values: FormValues
+  ) => SubmissionErrors | Promise<SubmissionErrors> | void
+  header: ReactElement
+  contactId?: number
 }
 
-export function Component() {
-  const navigate = useNavigate()
-  const [createContact] = useCreateContactMutation()
+export function ContactForm(props: Props) {
+  const { initialValues, onSubmit, header, contactId } = props
+
   const [findPhone] = usePhoneLazyQuery()
   const [findContacts] = useContactsLazyQuery()
 
@@ -69,6 +66,7 @@ export function Component() {
         where: {
           first_name: { _eq: values.firstName },
           last_name: { _eq: values.lastName },
+          id: { _neq: contactId },
         },
       },
     })
@@ -103,7 +101,10 @@ export function Component() {
     // Find duplicate number in db
     const { data: phoneData } = await findPhone({
       variables: {
-        where: { number: { _in: values.phones } },
+        where: {
+          number: { _in: values.phones },
+          contact_id: { _neq: contactId },
+        },
       },
     })
 
@@ -118,18 +119,7 @@ export function Component() {
       return { phones: values.phones.map((phone) => seen.get(phone) ?? '') }
     }
 
-    const { data } = await createContact({
-      variables: {
-        first_name: values.firstName.trim(),
-        last_name: values.lastName.trim(),
-        phones: values.phones.map((phone) => ({ number: phone })),
-      },
-      onCompleted(error, clientOptions) {
-        console.log(error, clientOptions)
-      },
-    })
-
-    if (data) navigate('/')
+    onSubmit(values)
   }
 
   return (
@@ -139,7 +129,7 @@ export function Component() {
       mutators={{ ...arrayMutators }}
       render={({ handleSubmit, form }) => (
         <form onSubmit={handleSubmit} css={styles.root}>
-          <Header />
+          {header}
           <div css={styles.content}>
             <section css={styles.section}>
               <PersonOutlineRoundedIcon css={styles.icon} />
