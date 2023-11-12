@@ -13,8 +13,8 @@ import { ToastProvider } from './common/toast/ToastProvider'
 
 const router = createHashRouter([
   { path: '/', lazy: () => import('./routes/list') },
-  { path: '/add', lazy: () => import('./routes/form') },
-  { path: '/edit/:id', lazy: () => import('./routes/form') },
+  { path: '/add', lazy: () => import('./routes/add') },
+  { path: '/edit/:id', lazy: () => import('./routes/edit') },
 ])
 
 const client = new ApolloClient({
@@ -23,7 +23,7 @@ const client = new ApolloClient({
     typePolicies: {
       Query: {
         fields: {
-          contact: offsetLimitPagination(),
+          contact: offsetLimitPagination(['where']),
         },
       },
     },
