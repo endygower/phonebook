@@ -19,6 +19,7 @@
     "@mui/material": "^5.14.17",
     "@testing-library/jest-dom": "^6.1.4",
     "@testing-library/react": "^14.1.0",
+    "apollo3-cache-persist": "^0.14.1",
     "final-form": "^4.20.10",
     "final-form-arrays": "^3.1.0",
     "graphql": "^16.8.1",

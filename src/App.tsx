@@ -1,7 +1,12 @@
 import { createHashRouter, RouterProvider } from 'react-router-dom'
 import theme from '~/theme'
 
-import { ApolloClient, ApolloProvider, InMemoryCache } from '@apollo/client'
+import {
+  ApolloClient,
+  ApolloProvider,
+  InMemoryCache,
+  NormalizedCacheObject,
+} from '@apollo/client'
 import { offsetLimitPagination } from '@apollo/client/utilities'
 import {
   CssBaseline,
@@ -10,6 +15,8 @@ import {
 
 import { ModalProvider } from './common/modal/ModalProvider'
 import { ToastProvider } from './common/toast/ToastProvider'
+import { useEffect, useState } from 'react'
+import { CachePersistor, LocalStorageWrapper } from 'apollo3-cache-persist'
 
 const router = createHashRouter([
   { path: '/', lazy: () => import('./routes/list') },
@@ -17,20 +24,42 @@ const router = createHashRouter([
   { path: '/edit/:id', lazy: () => import('./routes/edit') },
 ])
 
-const client = new ApolloClient({
-  uri: 'https://wpe-hiring.tokopedia.net/graphql',
-  cache: new InMemoryCache({
-    typePolicies: {
-      Query: {
-        fields: {
-          contact: offsetLimitPagination(['where']),
-        },
-      },
-    },
-  }),
-})
-
 export default function App() {
+  const [client, setClient] = useState<ApolloClient<NormalizedCacheObject>>()
+
+  useEffect(() => {
+    async function init() {
+      const cache = new InMemoryCache({
+        typePolicies: {
+          Query: {
+            fields: {
+              contact: offsetLimitPagination(['where']),
+            },
+          },
+        },
+      })
+      const newPersistor = new CachePersistor({
+        cache,
+        storage: new LocalStorageWrapper(window.localStorage),
+        debug: true,
+        trigger: 'write',
+      })
+
+      await newPersistor.restore()
+
+      setClient(
+        new ApolloClient({
+          uri: 'https://wpe-hiring.tokopedia.net/graphql',
+          cache,
+        })
+      )
+    }
+
+    init().catch(console.error)
+  }, [])
+
+  if (!client) return null
+
   return (
     <ApolloProvider client={client}>
       <CssVarsProvider theme={theme}>
