@@ -1,70 +1,64 @@
-import { createContext, useContext, useState, PropsWithChildren } from 'react'
-
-import { css } from '@mui/material'
+import {
+  createContext,
+  useContext,
+  useState,
+  PropsWithChildren,
+  useMemo,
+} from 'react'
 
 import Popup from './Popup'
 
-const ModalContext = createContext<{
+interface Action {
   showConfirmationModal: (config: ModalConfig) => void
   closeModal: () => void
-}>({
-  showConfirmationModal: () => {},
-  closeModal: () => {},
+}
+
+const Context = createContext<Action>({
+  showConfirmationModal() {},
+  closeModal() {},
 })
 
-type ModalConfig = {
+interface ModalConfig {
   content: string
   onConfirm: () => void
 }
 
-export function ModalProvider({
-  children,
-}: PropsWithChildren<unknown>) {
+export function ModalProvider(props: PropsWithChildren) {
   const [open, setOpen] = useState(false)
-  const [config, setConfig] = useState<ModalConfig>()
+  const [config, setConfig] = useState<ModalConfig>({
+    content: '',
+    onConfirm() {},
+  })
 
-  function showConfirmationModal(config: ModalConfig): void {
-    setOpen(true)
-    setConfig(config)
-  }
-  function closeModal() {
-    setOpen(false)
-  }
+  const action = useMemo(
+    () => ({
+      showConfirmationModal(config: ModalConfig): void {
+        setOpen(true)
+        setConfig(config)
+      },
+      closeModal() {
+        setOpen(false)
+      },
+    }),
+    []
+  )
 
   return (
-    <ModalContext.Provider
-      value={{
-        showConfirmationModal,
-        closeModal,
-      }}
-    >
-      {children}
-      {open && <div css={styles.overlay} />}
+    <Context.Provider value={action}>
+      {props.children}
       {open && (
         <Popup
           onClose={() => setOpen(false)}
-          title={'Confirmation'}
-          onProceed={config?.onConfirm}
+          title="Confirmation"
+          onProceed={config.onConfirm}
         >
-          {config?.content}
+          {config.content}
         </Popup>
       )}
-    </ModalContext.Provider>
+    </Context.Provider>
   )
 }
 
-const styles = {
-  overlay: css({
-    position: 'fixed',
-    backgroundColor: 'rgba(0,0,0,0.6)',
-    width: '100%',
-    height: '100%',
-    top: 0,
-    zIndex: 2,
-    overflow: 'hidden',
-  }),
-}
-
 export function useModal() {
-  return useContext(ModalContext)
+  return useContext(Context)
 }

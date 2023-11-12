@@ -12,29 +12,41 @@ type Props = {
 
 export default function Popup(props: Props) {
   return (
-    <Card css={styles.card}>
-      <IconButton
-        aria-label={`Close Modal`}
-        css={styles.closeIcon}
-        onClick={() => props.onClose()}
-      >
-        <CloseIcon />
-      </IconButton>
-      <div css={styles.title}>
-        <Typography variant="h2">{props.title}</Typography>
-      </div>
-      {props.children}
-      <div css={styles.buttonSection}>
-        <Button onClick={() => props.onClose()}>Cancel</Button>
-        <Button onClick={() => props.onProceed?.()} variant="contained">
-          Yes
-        </Button>
-      </div>
-    </Card>
+    <>
+      <div css={styles.overlay} />
+      <Card css={styles.card}>
+        <IconButton
+          aria-label={`Close Modal`}
+          css={styles.closeIcon}
+          onClick={() => props.onClose()}
+        >
+          <CloseIcon />
+        </IconButton>
+        <div css={styles.title}>
+          <Typography variant="h2">{props.title}</Typography>
+        </div>
+        {props.children}
+        <div css={styles.buttonSection}>
+          <Button onClick={() => props.onClose()}>Cancel</Button>
+          <Button onClick={() => props.onProceed?.()} variant="contained">
+            Yes
+          </Button>
+        </div>
+      </Card>
+    </>
   )
 }
 
 const styles = {
+  overlay: css({
+    position: 'fixed',
+    backgroundColor: 'rgba(0,0,0,0.6)',
+    width: '100%',
+    height: '100%',
+    top: 0,
+    zIndex: 2,
+    overflow: 'hidden',
+  }),
   card: css({
     position: 'fixed',
     top: '50%',

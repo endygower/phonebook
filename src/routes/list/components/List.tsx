@@ -13,7 +13,21 @@ interface Props {
 }
 
 export default function List(props: Props) {
-  const { title, variables } = props
+  const { title } = props
+
+  return (
+    <div css={styles.root}>
+      <Typography variant="h6" gutterBottom>
+        {title}
+      </Typography>
+      <Inner {...props} />
+    </div>
+  )
+}
+
+function Inner(props: Props) {
+  const { variables } = props
+
   const isDesktopView = useMediaQuery('(min-width:900px)')
 
   const { loading, error, data } = useContactsQuery({
@@ -25,16 +39,13 @@ export default function List(props: Props) {
 
   if (loading) return <Typography>Loading...</Typography>
   if (error) return <Typography>Something went wrong...</Typography>
-  if (!data) return <Typography>No data...</Typography>
+  if (!data || !data.contact.length) return <Typography>No data</Typography>
 
   return (
     <>
-      <Typography variant="h6" gutterBottom>
-        {title}
-      </Typography>
       <div css={[isDesktopView ? styles.desktopList : styles.list]}>
         {data.contact.map((item) => (
-          <ContactCard key={item.id} contact={item} isFavorite={true} />
+          <ContactCard key={item.id} contact={item} />
         ))}
       </div>
       <Button variant="text" css={styles.button}>
@@ -45,6 +56,10 @@ export default function List(props: Props) {
 }
 
 const styles = {
+  root: css({
+    display: 'flex',
+    flexDirection: 'column',
+  }),
   list: css({
     display: 'flex',
     flexDirection: 'column',

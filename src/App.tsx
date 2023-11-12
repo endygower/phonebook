@@ -8,6 +8,7 @@ import {
 } from '@mui/material'
 
 import { ModalProvider } from './common/modal/ModalProvider'
+import { ToastProvider } from './common/toast/ToastProvider'
 
 const router = createHashRouter([
   { path: '/', lazy: () => import('./routes/list') },
@@ -25,8 +26,10 @@ export default function App() {
     <ApolloProvider client={client}>
       <CssVarsProvider theme={theme}>
         <ModalProvider>
-          <CssBaseline />
-          <RouterProvider router={router} />
+          <ToastProvider>
+            <CssBaseline />
+            <RouterProvider router={router} />
+          </ToastProvider>
         </ModalProvider>
       </CssVarsProvider>
     </ApolloProvider>

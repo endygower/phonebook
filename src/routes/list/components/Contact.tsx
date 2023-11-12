@@ -14,15 +14,21 @@ import {
   IconButton,
   Typography,
 } from '@mui/material'
+import { useFavoriteAction, useFavorite } from '../contexts/favorite'
+import { useToast } from '~/common/toast/ToastProvider'
 
 interface Props {
   contact: ContactFragment
-  isFavorite: boolean
 }
 
 export default function ContactCard(props: Props) {
-  const { contact, isFavorite } = props
+  const { contact } = props
   const fullname = `${contact.first_name} ${contact.last_name}`
+
+  const toast = useToast()
+
+  const favorite = useFavorite()
+  const isFavorite = favorite.set.has(contact.id)
 
   const { showConfirmationModal, closeModal } = useModal()
 
@@ -46,6 +52,18 @@ export default function ContactCard(props: Props) {
     })
   }
 
+  const action = useFavoriteAction()
+
+  function addToFavorite() {
+    action.add(contact.id)
+    toast(`${fullname} is added to favorite`)
+  }
+
+  function removeFromFavorite() {
+    action.remove(contact.id)
+    toast(`${fullname} is removed from favorite`)
+  }
+
   return (
     <Card css={styles.root}>
       <CardContent>
@@ -61,6 +79,7 @@ export default function ContactCard(props: Props) {
             aria-label={`Add ${fullname} to favorite`}
             color="warning"
             disabled={loading}
+            onClick={addToFavorite}
           >
             <StarOutlineRoundedIcon />
           </IconButton>
@@ -70,6 +89,7 @@ export default function ContactCard(props: Props) {
             aria-label={`Remove ${fullname} from favorite`}
             color="warning"
             disabled={loading}
+            onClick={removeFromFavorite}
           >
             <StarRateRoundedIcon />
           </IconButton>

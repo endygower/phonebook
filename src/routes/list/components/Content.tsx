@@ -1,9 +1,11 @@
 import { css } from '@mui/material'
 import { useSearchValue } from '../contexts/search'
 import List from './List'
+import { useFavorite } from '../contexts/favorite'
 
 export default function Content() {
   const search = useSearchValue()
+  const favorite = useFavorite()
 
   return (
     <div css={styles.root}>
@@ -25,8 +27,14 @@ export default function Content() {
       {/* Display contacts list */}
       {!search && (
         <>
-          <List title="Favorite Contacts" />
-          <List title="Contacts" />
+          <List
+            title="Favorite Contacts"
+            variables={{ where: { id: { _in: favorite.values } } }}
+          />
+          <List
+            title="Contacts"
+            variables={{ where: { id: { _nin: favorite.values } } }}
+          />
         </>
       )}
     </div>
@@ -38,5 +46,6 @@ const styles = {
     padding: 16,
     display: 'flex',
     flexDirection: 'column',
+    gap: 16
   }),
 }
