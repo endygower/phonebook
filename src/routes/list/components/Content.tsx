@@ -46,6 +46,6 @@ const styles = {
     padding: 16,
     display: 'flex',
     flexDirection: 'column',
-    gap: 16
+    gap: 16,
   }),
 }

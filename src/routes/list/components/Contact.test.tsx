@@ -26,8 +26,8 @@ describe('App', () => {
     last_name: 'ipsum',
     phones: [{ number: 'my phone number' }],
   }
-const addLabel = 'Add lorem ipsum to favorite'
-const removeLabel = 'Remove lorem ipsum from favorite'
+  const addLabel = 'Add lorem ipsum to favorite'
+  const removeLabel = 'Remove lorem ipsum from favorite'
 
   afterEach(() => {
     localStorage.clear()

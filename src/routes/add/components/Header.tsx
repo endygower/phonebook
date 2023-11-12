@@ -1,7 +1,7 @@
 import { AppBar, IconButton, Toolbar, Typography } from '@mui/material'
 import { Link } from 'react-router-dom'
 
-import ArrowBackIosNewRoundedIcon from '@mui/icons-material/ArrowBackIosNewRounded';
+import ArrowBackIosNewRoundedIcon from '@mui/icons-material/ArrowBackIosNewRounded'
 
 export default function Header() {
   return (
@@ -15,9 +15,7 @@ export default function Header() {
         >
           <ArrowBackIosNewRoundedIcon />
         </IconButton>
-        <Typography variant="h1">
-          Add new contact
-        </Typography>
+        <Typography variant="h1">Add new contact</Typography>
       </Toolbar>
     </AppBar>
   )
